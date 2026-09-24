@@ -9,3 +9,5 @@ all:
 clean:
 	$(MAKE) -C $(SUBDIR) clean
 	rm -f bin/client
+static:
+	$(MAKE) -C $(SUBDIR) static

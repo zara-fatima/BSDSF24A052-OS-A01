@@ -18,3 +18,16 @@ $(OBJDIR)/%.o: %.c
 
 clean:
 	rm -f $(OBJDIR)/*.o $(TARGET)
+LIBDIR = ../lib
+LIBNAME = $(LIBDIR)/libmyutils.a
+STATIC_TARGET = $(BINDIR)/client_static
+
+.PHONY: static
+
+static: $(STATIC_TARGET)
+
+$(LIBNAME): $(OBJDIR)/mystrfunctions.o $(OBJDIR)/myfilefunctions.o
+	ar rcs $(LIBNAME) $(OBJDIR)/mystrfunctions.o $(OBJDIR)/myfilefunctions.o
+
+$(STATIC_TARGET): $(OBJDIR)/main.o $(LIBNAME)
+	$(CC) $(OBJDIR)/main.o -L$(LIBDIR) -lmyutils -o $(STATIC_TARGET)
