@@ -31,3 +31,17 @@ $(LIBNAME): $(OBJDIR)/mystrfunctions.o $(OBJDIR)/myfilefunctions.o
 
 $(STATIC_TARGET): $(OBJDIR)/main.o $(LIBNAME)
 	$(CC) $(OBJDIR)/main.o -L$(LIBDIR) -lmyutils -o $(STATIC_TARGET)
+DYNLIBNAME = $(LIBDIR)/libmyutils.so
+DYNAMIC_TARGET = $(BINDIR)/client_dynamic
+
+.PHONY: dynamic
+
+dynamic: $(DYNAMIC_TARGET)
+
+$(DYNLIBNAME): mystrfunctions.c myfilefunctions.c
+	$(CC) $(CFLAGS) -fPIC -c mystrfunctions.c -o $(OBJDIR)/mystrfunctions.o
+	$(CC) $(CFLAGS) -fPIC -c myfilefunctions.c -o $(OBJDIR)/myfilefunctions.o
+	$(CC) --shared -o $(DYNLIBNAME) $(OBJDIR)/mystrfunctions.o $(OBJDIR)/myfilefunctions.o
+
+$(DYNAMIC_TARGET): $(OBJDIR)/main.o $(DYNLIBNAME)
+	$(CC) $(OBJDIR)/main.o -L$(LIBDIR) -lmyutils -o $(DYNAMIC_TARGET)

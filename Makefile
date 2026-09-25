@@ -11,3 +11,5 @@ clean:
 	rm -f bin/client
 static:
 	$(MAKE) -C $(SUBDIR) static
+dynamic:
+	$(MAKE) -C $(SUBDIR) dynamic
