@@ -44,3 +44,36 @@ symbol inside the executable itself. This confirms that static linking copies
 the actual machine code of the library functions directly into the final
 executable at link time, rather than just referencing an external file. This
 is why the static executable is self-contained but larger in size.
+
+## Feature 4 — Dynamic Library
+
+**1. What is Position-Independent Code (-fPIC), and why is it required for shared libraries:**
+Position-Independent Code is machine code that can run correctly no matter
+where in memory it is loaded, because it doesn't use hardcoded/absolute memory
+addresses — it uses relative addressing instead. This is essential for shared
+libraries because a single copy of a .so file in memory can be shared by many
+different running programs at the same time, and each program may load the
+library at a different memory address. Without -fPIC, the code would only
+work correctly if it was always loaded at one fixed address, which isn't
+possible when multiple programs share it.
+
+**2. Difference in file size between static and dynamic clients, and why:**
+client_static is self-contained: at link time, the actual compiled machine
+code from libmyutils.a is copied directly into the executable, making it
+larger but able to run standalone. client_dynamic only stores a reference to
+libmyutils.so; the actual function code is not copied in, it is loaded from
+the separate .so file at runtime by the OS loader. This is why the dynamic
+executable is smaller — the difference becomes much more significant with
+larger libraries, since many programs can share a single loaded copy of the
+library in memory instead of each having its own copy.
+
+**3. What is LD_LIBRARY_PATH, and why was it necessary:**
+LD_LIBRARY_PATH is an environment variable that tells the dynamic loader
+(ld.so) additional directories to search when looking for shared libraries at
+runtime. It was necessary because libmyutils.so lives in a custom project
+folder (lib/), not in one of the operating system's standard library search
+paths (like /usr/lib). Without it, running client_dynamic failed with
+"cannot open shared object file" because the loader didn't know where to find
+the library. This shows that the dynamic loader is responsible for locating
+and loading shared libraries at program startup, separately from the
+compiler/linker's job at build time.
